@@ -4,6 +4,14 @@ test.describe('Login Flow', () => {
   // Ensure we start with a fresh session (though config handles this, explicit is better)
   test.use({ storageState: { cookies: [], origins: [] } });
 
+  test('should display the correct page title', async ({ page }) => {
+    await page.goto('/auth/login');
+
+    // Check for the correct page title
+    const pageTitle = await page.getByTestId('page-title').textContent();
+    expect(pageTitle).toBe('Login to base template ai-monster');
+  });
+
   test('should login successfully with valid admin credentials', async ({ page }) => {
     await page.goto('/auth/login');
 
@@ -12,15 +20,10 @@ test.describe('Login Flow', () => {
     await page.fill('input[name="password"]', 'password123');
     
     // Click sign in button
-    // Selector based on button type="submit" inside the first form (email login)
     await page.locator('form').first().locator('button[type="submit"]').click();
 
     // Expect redirection to dashboard
     await expect(page).toHaveURL(/\/dashboard/);
-    
-    // Expect session persistence/user info
-    // Adjust selector based on actual dashboard implementation
-    // await expect(page.locator('text=Admin User')).toBeVisible();
   });
 
   test('should show error with invalid credentials', async ({ page }) => {
